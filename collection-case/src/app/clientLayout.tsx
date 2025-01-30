@@ -1,13 +1,13 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession,SessionProvider } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function ClientLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return <AuthenticatedLayout>{children}</AuthenticatedLayout>;
+  return <SessionProvider><AuthenticatedLayout>{children}</AuthenticatedLayout></SessionProvider>;
 }
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
