@@ -1,29 +1,28 @@
 'use client';
 
-import { SessionProvider, useSession } from 'next-auth/react';
-import { Provider } from 'react-redux';
-import store from '../store/store';
+import { useSession } from 'next-auth/react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function ClientLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <SessionProvider>
-      <AuthenticatedLayout>{children}</AuthenticatedLayout>
-    </SessionProvider>
-  );
+  return <AuthenticatedLayout>{children}</AuthenticatedLayout>;
 }
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
-  const { status } = useSession();
+  const { status, data: session } = useSession();
   const router = useRouter();
 
-  
-  if (status === 'unauthenticated') {
-    router.push('/login');
-    return null;
-  }
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    } else if (status === 'authenticated' && !session) {
+      router.push('/login');
+    } else if (status === 'authenticated' && session) {
+      router.push('/collections');
+    }
+  }, [status, session, router]);
 
   return <>{children}</>;
 }
